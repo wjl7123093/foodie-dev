@@ -31,11 +31,22 @@ spring:
       max-lifetime: 1800000           # 连接的生命时长（毫秒），超时且没有被使用则释放（retired）。默认 30 分钟
       connection-test-query: SELECT 1
 
-###########################################
+############################################################
 #
 # mybatis 配置
 #
-############################################
+############################################################
 mybatis:
   type-aliases-package: com.snow.pojo         # 所有 POJO 类所在的包路径
   mapper-locations: classpath:mapper/*.xml    # mapper 映射文件
+
+############################################################
+#
+# mybatis mapper 配置
+#
+############################################################
+# 通用 mapper 配置
+mapper:
+  mappers: com.snow.my.mapper.MyMapper
+  not-empty: false    # 在进行数据库操作的时候，判断表达式 username != null，是否追加 username != ''
+  identity: MYSQL
