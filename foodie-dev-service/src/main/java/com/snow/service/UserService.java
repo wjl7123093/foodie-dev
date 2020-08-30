@@ -1,5 +1,8 @@
 package com.snow.service;
 
+import com.snow.pojo.Users;
+import com.snow.pojo.bo.UserBO;
+
 public interface UserService {
 
     /**
@@ -8,4 +11,17 @@ public interface UserService {
      * @return true 存在，false 不存在
      */
     public boolean queryUsernameIsExist(String username);
+
+    /**
+     * 创建用户
+     */
+    public Users createUser(UserBO userBO);
+
+    /**
+     * 检索用户名和密码是否匹配，用于登录
+     * @param username
+     * @param password
+     * @return
+     */
+    public Users queryUserForLogin(String username, String password);
 }
