@@ -7,6 +7,7 @@ import com.snow.mapper.*;
 import com.snow.pojo.*;
 import com.snow.pojo.vo.CommentLevelCountsVO;
 import com.snow.pojo.vo.ItemCommentVO;
+import com.snow.pojo.vo.SearchItemVO;
 import com.snow.service.ItemService;
 import com.snow.utils.DesensitizationUtil;
 import com.snow.utils.PagedGridResult;
@@ -116,6 +117,21 @@ public class ItemServiceImpl implements ItemService {
         }
 
         // 封装分页数据返回给前端
+        return setterPagedGrid(list, page);
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public PagedGridResult searchItems(String keywords, String sort, Integer page, Integer pageSize) {
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("keywords", keywords);
+        map.put("sort", sort);
+
+        // 排序
+        PageHelper.startPage(page, pageSize);
+        List<SearchItemVO> list = itemsMapperCustom.searchItems(map);
+
         return setterPagedGrid(list, page);
     }
 
