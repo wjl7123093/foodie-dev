@@ -3,6 +3,9 @@ package com.snow.service;
 import com.snow.pojo.Users;
 import com.snow.pojo.bo.UserBO;
 
+/**
+ * 用户接口
+ */
 public interface UserService {
 
     /**
