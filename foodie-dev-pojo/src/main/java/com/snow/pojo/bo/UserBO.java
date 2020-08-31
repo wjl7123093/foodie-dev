@@ -3,6 +3,9 @@ package com.snow.pojo.bo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+/**
+ * @Desc: BO: 与业务层相关的实体
+ */
 @ApiModel(value = "用户对象BO", description = "从客户端，由用户传入的数据封装在此 entity 中")
 public class UserBO {
 
