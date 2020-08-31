@@ -19,9 +19,6 @@ public interface UserService {
 
     /**
      * 检索用户名和密码是否匹配，用于登录
-     * @param username
-     * @param password
-     * @return
      */
     public Users queryUserForLogin(String username, String password);
 }
