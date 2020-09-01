@@ -2,52 +2,53 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.snow.mapper.ItemsMapperCustom">
 
-  <select id="queryItemComments" parameterType="Map" resultType="com.snow.pojo.vo.ItemCommentVO">
+    <select id="queryItemComments" parameterType="Map" resultType="com.snow.pojo.vo.ItemCommentVO">
 
-    SELECT
+        SELECT
         ic.comment_level as commentLevel,
         ic.content as content,
         ic.sepc_name as specName,
         ic.created_time as createdTime,
         u.face as userFace,
         u.nickname as nickname
-    FROM
+        FROM
         items_comments ic
-    LEFT JOIN
+        LEFT JOIN
         users u
-    ON
+        ON
         ic.user_id = u.id
-    WHERE
+        WHERE
         ic.item_id = #{paramsMap.itemId}
         <if test=" paramsMap.level != null and paramsMap.level != '' ">
-          AND ic.comment_level = #{paramsMap.level}
+            AND ic.comment_level = #{paramsMap.level}
         </if>
 
-  </select>
+    </select>
 
-  <select id="searchItems" parameterType="Map" resultType="com.snow.pojo.vo.SearchItemVO">
+    <!-- 关键词搜索 -->
+    <select id="searchItems" parameterType="Map" resultType="com.snow.pojo.vo.SearchItemVO">
 
-    SELECT
-        i.id as itemId,
-        i.item_name as itemName,
-        i.sell_counts as sellCounts,
-        ii.url as imgUrl,
-        tempSpec.price_discount as price
-    FROM
-        items i
-    LEFT JOIN
-        items_img ii
-    ON
-        i.id = ii.item_id
-    LEFT JOIN
-        (SELECT item_id, MIN(price_discount) as price_discount FROM items_spec GROUP BY item_id) tempSpec
-    ON
-        i.id = tempSpec.item_id
-    WHERE
-        ii.is_main = 1
-        <if test=" paramsMap.keywords != null and paramsMap.keywords != '' ">
-            AND i.item_name like '%${paramsMap.keywords}%'
-        </if>
+        SELECT
+            i.id as itemId,
+            i.item_name as itemName,
+            i.sell_counts as sellCounts,
+            ii.url as imgUrl,
+            tempSpec.price_discount as price
+        FROM
+            items i
+        LEFT JOIN
+            items_img ii
+        ON
+            i.id = ii.item_id
+        LEFT JOIN
+            (SELECT item_id, MIN(price_discount) as price_discount FROM items_spec GROUP BY item_id) tempSpec
+        ON
+            i.id = tempSpec.item_id
+        WHERE
+            ii.is_main = 1
+            <if test=" paramsMap.keywords != null and paramsMap.keywords != '' ">
+                AND i.item_name like '%${paramsMap.keywords}%'
+            </if>
         ORDER BY
         <choose>
             <when test=" paramsMap.sort == &quot;c&quot; ">
@@ -61,10 +62,48 @@
             </otherwise>
         </choose>
 
-  </select>
-   <!-- &quot; => 单引号’  -->
-   <!--k: 默认，代表默认排序，根据 name
-   c: 根据销量排序
-   p: 根据价格排序-->
+    </select>
+    <!-- &quot; => 单引号’  -->
+    <!--k: 默认，代表默认排序，根据 name
+    c: 根据销量排序
+    p: 根据价格排序-->
+
+    <!-- 三级分类搜索 -->
+    <select id="searchItemsByThirdCat" parameterType="Map" resultType="com.snow.pojo.vo.SearchItemVO">
+
+        SELECT
+            i.id as itemId,
+            i.item_name as itemName,
+            i.sell_counts as sellCounts,
+            ii.url as imgUrl,
+            tempSpec.price_discount as price
+        FROM
+            items i
+        LEFT JOIN
+            items_img ii
+        ON
+            i.id = ii.item_id
+        LEFT JOIN
+            (SELECT item_id, MIN(price_discount) as price_discount FROM items_spec GROUP BY item_id) tempSpec
+        ON
+            i.id = tempSpec.item_id
+        WHERE
+            ii.is_main = 1
+        AND
+            i.cat_id = #{paramsMap.catId}
+        ORDER BY
+        <choose>
+            <when test=" paramsMap.sort == &quot;c&quot; ">
+                i.sell_counts DESC
+            </when>
+            <when test=" paramsMap.sort == &quot;p&quot; ">
+                tempSpec.price_discount ASC
+            </when>
+            <otherwise>
+                i.item_name ASC
+            </otherwise>
+        </choose>
+
+    </select>
 
 </mapper>
