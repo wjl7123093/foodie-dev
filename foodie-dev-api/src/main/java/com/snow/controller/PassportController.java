@@ -89,6 +89,9 @@ public class PassportController {
         CookieUtils.setCookie(request, response, "user",
                 JsonUtils.objectToJson(userResult), true);
 
+        // TODO 生成用户 token，存入 radis 会话
+        // TODO 同步购物车数据
+
         return IMOOCJSONResult.ok();
     }
 
@@ -119,6 +122,9 @@ public class PassportController {
         // 加密保存 cookie
         CookieUtils.setCookie(request, response, "user",
                 JsonUtils.objectToJson(userResult), true);
+
+        // TODO 生成用户 token，存入 radis 会话
+        // TODO 同步购物车数据
 
         return IMOOCJSONResult.ok(userResult);
     }
