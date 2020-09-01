@@ -136,6 +136,21 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public PagedGridResult searchItems(Integer catId, String sort, Integer page, Integer pageSize) {
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("catId", catId);
+        map.put("sort", sort);
+
+        // 排序
+        PageHelper.startPage(page, pageSize);
+        List<SearchItemVO> list = itemsMapperCustom.searchItemsByThirdCat( map);
+
+        return setterPagedGrid(list, page);
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
     Integer getCommentCounts(String itemId, Integer level) {
 
         ItemsComments condition = new ItemsComments();
