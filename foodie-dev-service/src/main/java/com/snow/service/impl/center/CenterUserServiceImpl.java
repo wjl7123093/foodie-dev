@@ -30,15 +30,29 @@ public class CenterUserServiceImpl implements CenterUserService {
         return centerUser;
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public Users updateUserInfo(String userId, CenterUserBO centerUserBO) {
 
-        Users centerUser = new Users();
-        BeanUtils.copyProperties(centerUserBO, centerUser);
-        centerUser.setId(userId);
-        centerUser.setUpdatedTime(new Date());
+        Users updateUser = new Users();
+        BeanUtils.copyProperties(centerUserBO, updateUser);
+        updateUser.setId(userId);
+        updateUser.setUpdatedTime(new Date());
 
-        usersMapper.updateByPrimaryKeySelective(centerUser);
+        usersMapper.updateByPrimaryKeySelective(updateUser);
+        return queryUserInfo(userId);
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public Users updateUserFace(String userId, String faceUrl) {
+
+        Users updateUser = new Users();
+        updateUser.setId(userId);
+        updateUser.setFace(faceUrl);
+        updateUser.setUpdatedTime(new Date());
+
+        usersMapper.updateByPrimaryKeySelective(updateUser);
         return queryUserInfo(userId);
     }
 }
