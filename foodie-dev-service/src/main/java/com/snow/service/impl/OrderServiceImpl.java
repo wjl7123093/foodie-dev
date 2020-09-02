@@ -15,6 +15,7 @@ import com.snow.service.AddressService;
 import com.snow.service.CarouselService;
 import com.snow.service.ItemService;
 import com.snow.service.OrderService;
+import com.snow.utils.DateUtil;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -160,9 +161,38 @@ public class OrderServiceImpl implements OrderService {
         orderStatusMapper.updateByPrimaryKeySelective(paidStatus);
     }
 
+    @Transactional(propagation = Propagation.SUPPORTS)
     @Override
     public OrderStatus queryOrderStatusInfo(String orderId) {
         return orderStatusMapper.selectByPrimaryKey(orderId);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public void closeOrder() {
+
+        OrderStatus queryOrder = new OrderStatus();
+        queryOrder.setOrderStatus(OrderStatusEnum.WAIT_PAY.type);
+        List<OrderStatus> list = orderStatusMapper.select(queryOrder);
+        for (OrderStatus os : list) {
+            // 获得订单创建时间
+            Date createdTime = os.getCreatedTime();
+            // 和当前时间做对比
+            int days = DateUtil.daysBetween(createdTime, new Date());
+            if (days > 1) {
+                // 超过 1 天，关闭订单
+                doCloseOrder(os.getOrderId());
+            }
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    void doCloseOrder(String orderId) {
+        OrderStatus close = new OrderStatus();
+        close.setOrderId(orderId);
+        close.setOrderStatus(OrderStatusEnum.CLOSE.type);
+        close.setCloseTime(new Date());
+        orderStatusMapper.updateByPrimaryKeySelective(close);
     }
 
 
