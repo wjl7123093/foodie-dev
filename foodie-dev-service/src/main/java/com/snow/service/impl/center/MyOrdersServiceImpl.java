@@ -11,6 +11,7 @@ import com.snow.pojo.OrderStatus;
 import com.snow.pojo.Orders;
 import com.snow.pojo.vo.MyOrdersVO;
 import com.snow.service.center.MyOrdersService;
+import com.snow.service.impl.BaseServiceImpl;
 import com.snow.utils.PagedGridResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class MyOrdersServiceImpl implements MyOrdersService {
+public class MyOrdersServiceImpl extends BaseServiceImpl implements MyOrdersService  {
 
     @Autowired
     public OrdersMapperCustom ordersMapperCustom;
@@ -116,22 +117,6 @@ public class MyOrdersServiceImpl implements MyOrdersService {
         int result = ordersMapper.updateByExampleSelective(delOrder, example);
 
         return result == 1 ? true : false;
-    }
-
-    /**
-     * 封装分页数据返回给前端
-     * @param list
-     * @param page
-     * @return
-     */
-    private PagedGridResult setterPagedGrid(List<?> list, Integer page) {
-        PageInfo<?> pageList = new PageInfo<>(list);
-        PagedGridResult grid = new PagedGridResult();
-        grid.setPage(page);
-        grid.setRows(list);
-        grid.setTotal(pageList.getPages());
-        grid.setRecords(pageList.getTotal());
-        return grid;
     }
 
 }
