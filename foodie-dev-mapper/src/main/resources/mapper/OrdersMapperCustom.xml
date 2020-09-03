@@ -15,7 +15,10 @@
           property：对应三级分类的 list 属性名
           ofType：集合的类型，三级分类的 vo
         -->
-        <collection property="subOrderItemList" ofType="com.snow.pojo.vo.MySubOrderItemVO">
+        <collection property="subOrderItemList"
+                    select="getSubItems"
+                    column="orderId"
+                    ofType="com.snow.pojo.vo.MySubOrderItemVO">
 
             <result column="itemId" property="itemId" />
             <result column="itemName" property="itemName" />
@@ -28,7 +31,54 @@
 
     </resultMap>
 
+    <!--
+        将 1 个 select 语句拆分为 2 个 select 语句，
+        目的是为了避免出现前端页面展示的时候，每一页数量统计错乱。
+        （不拆分的情况下，每一条不同规格的订单商品会被当作一条订单进行统计）
+    -->
+
+    <!-- 查询订单列表 -->
     <select id="queryMyOrders" resultMap="myOrdersVO" parameterType="Map">
+        SELECT
+            od.id as orderId,
+            od.created_time as createdTime,
+            od.pay_method as payMethod,
+            od.real_pay_amount as realPayAmount,
+            od.post_amount as postAmount,
+            os.order_status as orderStatus
+        FROM
+            orders od
+        LEFT JOIN
+            order_status os
+        ON
+            od.id = os.order_id
+        WHERE
+            od.user_id = #{paramsMap.userId}
+        AND
+            od.is_delete = 0
+            <if test="paramsMap.orderStatus != null">
+                AND os.order_status = #{paramsMap.orderStatus}
+            </if>
+        ORDER BY
+            od.updated_time ASC
+    </select>
+
+    <!-- 查询订单商品规格列表 -->
+    <select id="getSubItems" parameterType="Map" resultType="com.snow.pojo.vo.MySubOrderItemVO">
+        SELECT
+            oi.item_id as itemId,
+            oi.item_name as itemName,
+            oi.item_img as itemImg,
+            oi.item_spec_name as itemSpecName,
+            oi.buy_counts as buyCounts,
+            oi.price as price
+        FROM
+            order_items oi
+        WHERE
+            oi.order_id = #{orderId}
+    </select>
+
+    <select id="queryMyOrdersDonotUse" resultMap="myOrdersVO" parameterType="Map">
         SELECT
             od.id as orderId,
             od.created_time as createdTime,
