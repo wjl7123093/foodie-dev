@@ -10,6 +10,7 @@ import com.snow.mapper.OrdersMapperCustom;
 import com.snow.pojo.OrderStatus;
 import com.snow.pojo.Orders;
 import com.snow.pojo.vo.MyOrdersVO;
+import com.snow.pojo.vo.OrderStatusCountsVO;
 import com.snow.service.center.MyOrdersService;
 import com.snow.service.impl.BaseServiceImpl;
 import com.snow.utils.PagedGridResult;
@@ -117,6 +118,48 @@ public class MyOrdersServiceImpl extends BaseServiceImpl implements MyOrdersServ
         int result = ordersMapper.updateByExampleSelective(delOrder, example);
 
         return result == 1 ? true : false;
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public OrderStatusCountsVO getOrderStatusCounts(String userId) {
+
+        Map<String, Object> paramsMap = new HashMap<>();
+        paramsMap.put("userId", userId);
+
+        paramsMap.put("orderStatus", OrderStatusEnum.WAIT_PAY.type);
+        int waitPayCounts = ordersMapperCustom.getMyOrderStatusCounts(paramsMap);
+
+        paramsMap.put("orderStatus", OrderStatusEnum.WAIT_DELIVER.type);
+        int waitDeliverCounts = ordersMapperCustom.getMyOrderStatusCounts(paramsMap);
+
+        paramsMap.put("orderStatus", OrderStatusEnum.WAIT_RECEIVE.type);
+        int waitReceiveCounts = ordersMapperCustom.getMyOrderStatusCounts(paramsMap);
+
+        paramsMap.put("orderStatus", OrderStatusEnum.SUCCESS.type);
+        paramsMap.put("isComment", YesOrNo.NO.type);
+        int waitCommentCounts = ordersMapperCustom.getMyOrderStatusCounts(paramsMap);
+
+        OrderStatusCountsVO vo = new OrderStatusCountsVO(waitPayCounts,
+                                                         waitDeliverCounts,
+                                                         waitReceiveCounts,
+                                                         waitCommentCounts);
+
+        return vo;
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public PagedGridResult getOrdersTrend(String userId, Integer page, Integer pageSize) {
+
+        Map<String, Object> paramsMap = new HashMap<>();
+        paramsMap.put("userId", userId);
+
+        PageHelper.startPage(page, pageSize);
+
+        List<OrderStatus> list = ordersMapperCustom.getMyOrderTrend(paramsMap);
+
+        return setterPagedGrid(list, page);
     }
 
 }

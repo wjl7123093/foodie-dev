@@ -3,6 +3,7 @@ package com.snow.service.center;
 import com.snow.pojo.Orders;
 import com.snow.pojo.Users;
 import com.snow.pojo.bo.center.CenterUserBO;
+import com.snow.pojo.vo.OrderStatusCountsVO;
 import com.snow.utils.PagedGridResult;
 
 /**
@@ -49,4 +50,22 @@ public interface MyOrdersService {
      * @param orderId
      */
     public boolean deleteOrder(String userId, String orderId);
+
+    /**
+     * 查询用户订单状态数
+     * @param userId
+     * @return
+     */
+    public OrderStatusCountsVO getOrderStatusCounts(String userId);
+
+    /**
+     * 查询订单动向
+     * @param userId
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    public PagedGridResult getOrdersTrend(String userId,
+                                         Integer page,
+                                         Integer pageSize);
 }
