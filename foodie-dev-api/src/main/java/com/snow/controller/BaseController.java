@@ -1,5 +1,10 @@
 package com.snow.controller;
 
+import com.snow.pojo.Orders;
+import com.snow.service.center.MyOrdersService;
+import com.snow.utils.IMOOCJSONResult;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.io.File;
@@ -27,5 +32,29 @@ public class BaseController {
                                                             File.separator + "foodie-shop" +
                                                             File.separator + "faces";
 //    public static final String IMAGE_USER_FACE_LOCATION = "/workspaces/images/foodie-shop/faces";
+
+
+    @Autowired
+    public MyOrdersService myOrdersService;
+
+    /**
+     * 用于验证用户和订单是否存在关联关系，避免非法用户调用
+     * @param userId
+     * @param orderId
+     * @return
+     */
+    public IMOOCJSONResult checkUserOrder(String userId, String orderId) {
+
+        if (StringUtils.isBlank(userId) || StringUtils.isBlank(orderId)) {
+            return IMOOCJSONResult.errorMsg(null);
+        }
+
+        Orders myOrder = myOrdersService.queryMyOrder(userId, orderId);
+        if (myOrder == null) {
+            return IMOOCJSONResult.errorMsg("订单不存在！");
+        }
+
+        return IMOOCJSONResult.ok(myOrder);
+    }
 
 }
