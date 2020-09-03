@@ -1,6 +1,7 @@
 package com.snow.controller.center;
 
 import com.snow.controller.BaseController;
+import com.snow.pojo.Orders;
 import com.snow.pojo.Users;
 import com.snow.pojo.bo.center.CenterUserBO;
 import com.snow.resource.FileUpload;
@@ -68,6 +69,82 @@ public class MyOrdersController extends BaseController {
                                                              pageSize);
 
         return IMOOCJSONResult.ok(grid);
+    }
+
+    @ApiOperation(value = "商家发货", notes = "商家发货", httpMethod = "POST")
+    @PostMapping("/deliver")
+    public IMOOCJSONResult deliver(
+            @ApiParam(name = "orderId", value = "订单 ID", required = true)
+            @RequestParam String orderId) {
+
+        if (StringUtils.isBlank(orderId)) {
+            return IMOOCJSONResult.errorMsg("订单 ID 不能为空");
+        }
+
+        myOrdersService.updateDeliverOrderStatus(orderId);
+        return IMOOCJSONResult.ok();
+    }
+
+    @ApiOperation(value = "确认收货", notes = "确认收货", httpMethod = "POST")
+    @PostMapping("/confirmReceive")
+    public IMOOCJSONResult confirmReceive(
+            @ApiParam(name = "orderId", value = "订单 ID", required = true)
+            @RequestParam String orderId,
+            @ApiParam(name = "userId", value = "用户 ID", required = true)
+            @RequestParam String userId) {
+
+        IMOOCJSONResult checkRes = checkUserOrder(userId, orderId);
+        if (!checkRes.isOK()) {
+            return checkUserOrder(userId, orderId);
+        }
+
+        boolean updateRes = myOrdersService.updateReceiveOrderStatus(orderId);
+        if (!updateRes) {
+            return IMOOCJSONResult.errorMsg("订单确认收货失败！");
+        }
+
+        return IMOOCJSONResult.ok();
+    }
+
+    @ApiOperation(value = "删除订单", notes = "删除订单", httpMethod = "POST")
+    @PostMapping("/delete")
+    public IMOOCJSONResult delete(
+            @ApiParam(name = "orderId", value = "订单 ID", required = true)
+            @RequestParam String orderId,
+            @ApiParam(name = "userId", value = "用户 ID", required = true)
+            @RequestParam String userId) {
+
+        IMOOCJSONResult checkRes = checkUserOrder(userId, orderId);
+        if (!checkRes.isOK()) {
+            return checkUserOrder(userId, orderId);
+        }
+
+        boolean deleteRes = myOrdersService.deleteOrder(userId, orderId);
+        if (!deleteRes) {
+            return IMOOCJSONResult.errorMsg("订单删除失败！");
+        }
+
+        return IMOOCJSONResult.ok();
+    }
+
+    /**
+     * 用于验证用户和订单是否存在关联关系，避免非法用户调用
+     * @param userId
+     * @param orderId
+     * @return
+     */
+    private IMOOCJSONResult checkUserOrder(String userId, String orderId) {
+
+        if (StringUtils.isBlank(userId) || StringUtils.isBlank(orderId)) {
+            return IMOOCJSONResult.errorMsg(null);
+        }
+
+        Orders myOrder = myOrdersService.queryMyOrder(userId, orderId);
+        if (myOrder == null) {
+            return IMOOCJSONResult.errorMsg("订单不存在！");
+        }
+
+        return IMOOCJSONResult.ok();
     }
 
 }
