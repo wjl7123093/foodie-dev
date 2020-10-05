@@ -11,6 +11,10 @@
 
     <artifactId>foodie-dev-api</artifactId>
 
+    <!--<packaging>jar</packaging>-->
+    <!-- 打包 war [1] -->
+    <packaging>war</packaging>
+
     <dependencies>
 
         <!-- api -> service -> mapper -> pojo -> common
@@ -21,6 +25,13 @@
             <artifactId>foodie-dev-service</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+
+        <!-- 打包 war [3] 添加依赖 -->
+        <!--<dependency>-->
+            <!--<groupId>javax.servlet</groupId>-->
+            <!--<artifactId>javax.servlet-api</artifactId>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
     </dependencies>
 
 

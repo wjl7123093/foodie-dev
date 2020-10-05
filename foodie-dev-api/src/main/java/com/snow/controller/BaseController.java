@@ -24,7 +24,8 @@ public class BaseController {
 
     // 微信支付成功 -> 支付中心 -> 天天吃货平台
     //                        |-> 回调通知 url
-    String payReturnUrl = "http://localhost:8088/orders/notifyMerchantOrderPaid";
+//    String payReturnUrl = "http://localhost:8088/orders/notifyMerchantOrderPaid";
+    String payReturnUrl = "http://192.168.197.128:8088/foodie-dev-api/orders/notifyMerchantOrderPaid";
 
     // 用户头像本地保存地址
     public static final String IMAGE_USER_FACE_LOCATION = File.separator + "workspaces" +
